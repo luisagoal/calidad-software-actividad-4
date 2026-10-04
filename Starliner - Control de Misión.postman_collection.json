@@ -1,0 +1,459 @@
+{
+  "info": {
+    "_postman_id": "665e2cd6-73a0-4771-ae97-795a41cf04f3",
+    "name": "Starliner - Control de Misión",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "58554306",
+    "_collection_link": "https://go.postman.co/collection/58554306-665e2cd6-73a0-4771-ae97-795a41cf04f3?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "Tiempo del cohete",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const respuesta = pm.response.json();\r\nconst datos = respuesta.json || respuesta.data;\r\n\r\npm.test(\"El servicio responde con estado 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\npm.test(\"La telemetría del cohete incluye el tiempo de misión\", function () {\r\n    pm.expect(datos).to.have.property(\"tiempo_mision_seg\");\r\n    pm.expect(datos.tiempo_mision_seg).to.be.a(\"number\");\r\n});\r\n\r\n// Guarda el tiempo del cohete para compararlo con el de la cápsula\r\npm.collectionVariables.set(\"tiempo_cohete\", datos.tiempo_mision_seg);"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{ \"vehiculo\": \"Atlas V\", \"tiempo_mision_seg\": {{met_cohete}} }",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://postman-echo.com/post",
+          "protocol": "https",
+          "host": [
+            "postman-echo",
+            "com"
+          ],
+          "path": [
+            "post"
+          ]
+        }
+      },
+      "response": [
+        {
+          "name": "Vuelo 2019 - cohete",
+          "originalRequest": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "x-mock-response-name",
+                "value": "{{escenario}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/cohete/tiempo",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "cohete",
+                "tiempo"
+              ]
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "cookie": [],
+          "body": "   { \"vehiculo\": \"Atlas V\", \"tiempo_mision_seg\": 1860 }"
+        },
+        {
+          "name": "Vuelo corregido - cohete",
+          "originalRequest": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "x-mock-response-name",
+                "value": "{{escenario}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/cohete/tiempo",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "cohete",
+                "tiempo"
+              ]
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "cookie": [],
+          "body": "{\n    \"vehiculo\": \"Atlas V\",\n    \"tiempo_mision_seg\": 1860\n}"
+        }
+      ]
+    },
+    {
+      "name": "Reloj de la cápsula (MET)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const respuesta = pm.response.json();\r\nconst datos = respuesta.json || respuesta.data;\r\nconst tiempoCohete = Number(pm.collectionVariables.get(\"tiempo_cohete\"));\r\n\r\npm.test(\"El servicio responde con estado 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\npm.test(\"El reloj de la cápsula está sincronizado con el del cohete\", function () {\r\n    const diferencia = Math.abs(datos.tiempo_mision_seg - tiempoCohete);\r\n    pm.expect(diferencia, \"Diferencia en segundos\").to.be.at.most(1);\r\n});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{ \"vehiculo\": \"Starliner\", \"tiempo_mision_seg\": {{met_capsula}} }",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://postman-echo.com/post",
+          "protocol": "https",
+          "host": [
+            "postman-echo",
+            "com"
+          ],
+          "path": [
+            "post"
+          ]
+        }
+      },
+      "response": [
+        {
+          "name": "Vuelo 2019 - MET",
+          "originalRequest": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "x-mock-response-name",
+                "value": "{{escenario}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/capsula/met",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "capsula",
+                "met"
+              ]
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "cookie": [],
+          "body": "{ \"vehiculo\": \"Starliner\", \"tiempo_mision_seg\": 41460 }"
+        },
+        {
+          "name": "Vuelo corregido - MET",
+          "originalRequest": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "x-mock-response-name",
+                "value": "{{escenario}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/capsula/met",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "capsula",
+                "met"
+              ]
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "cookie": [],
+          "body": "{ \"vehiculo\": \"Starliner\", \"tiempo_mision_seg\": 1860 }"
+        }
+      ]
+    },
+    {
+      "name": "Nivel de combustible",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const respuesta = pm.response.json();\r\nconst datos = respuesta.json || respuesta.data;\r\n\r\npm.test(\"El servicio responde con estado 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\npm.test(\"El combustible está por encima del mínimo requerido\", function () {\r\n    pm.expect(datos.combustible_pct).to.be.at.least(datos.minimo_requerido_pct);\r\n});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{ \"combustible_pct\": {{combustible_pct}}, \"minimo_requerido_pct\": 60 }",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://postman-echo.com/post",
+          "protocol": "https",
+          "host": [
+            "postman-echo",
+            "com"
+          ],
+          "path": [
+            "post"
+          ]
+        }
+      },
+      "response": [
+        {
+          "name": "Vuelo 2019 - combustible",
+          "originalRequest": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "x-mock-response-name",
+                "value": "{{escenario}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/capsula/combustible",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "capsula",
+                "combustible"
+              ]
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "cookie": [],
+          "body": " { \"combustible_pct\": 25, \"minimo_requerido_pct\": 60 }"
+        },
+        {
+          "name": "Vuelo corregido - combustible",
+          "originalRequest": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "x-mock-response-name",
+                "value": "{{escenario}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/capsula/combustible",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "capsula",
+                "combustible"
+              ]
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "cookie": [],
+          "body": "  { \"combustible_pct\": 85, \"minimo_requerido_pct\": 60 }"
+        }
+      ]
+    },
+    {
+      "name": "Secuencia de separación",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const respuesta = pm.response.json();\r\nconst datos = respuesta.json || respuesta.data;\r\n\r\npm.test(\"El servicio responde con estado 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\npm.test(\"La secuencia de separación no presenta riesgo de colisión\", function () {\r\n    pm.expect(datos.riesgo_colision).to.eql(false);\r\n});\r\n\r\npm.test(\"El tiempo de respuesta es menor a 2 segundos\", function () {\r\n    pm.expect(pm.response.responseTime).to.be.below(2000);\r\n});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "   { \"secuencia\": \"separacion_modulo_servicio\", \"configuracion_propulsores\": \"{{config_propulsores}}\", \"riesgo_colision\": {{riesgo_colision}} }",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://postman-echo.com/post",
+          "protocol": "https",
+          "host": [
+            "postman-echo",
+            "com"
+          ],
+          "path": [
+            "post"
+          ]
+        }
+      },
+      "response": [
+        {
+          "name": "Vuelo 2019 - separacion",
+          "originalRequest": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "x-mock-response-name",
+                "value": "{{escenario}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "   { \"comando\": \"iniciar_separacion\" }",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/capsula/separacion",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "capsula",
+                "separacion"
+              ]
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "cookie": [],
+          "body": " { \"secuencia\": \"separacion_modulo_servicio\", \"configuracion_propulsores\": \"incorrecta\", \"riesgo_colision\": true }"
+        },
+        {
+          "name": "Vuelo corregido - separacion",
+          "originalRequest": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "x-mock-response-name",
+                "value": "{{escenario}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "   { \"comando\": \"iniciar_separacion\" }",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/capsula/separacion",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "capsula",
+                "separacion"
+              ]
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "cookie": [],
+          "body": " { \"secuencia\": \"separacion_modulo_servicio\", \"configuracion_propulsores\": \"correcta\", \"riesgo_colision\": false }"
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "tiempo_cohete",
+      "value": ""
+    }
+  ]
+}
